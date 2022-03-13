@@ -1,5 +1,7 @@
 website:
-  - any: ["*.html", "*.js", "*.css"]
+  - "*.html"
+  - "*.js"
+  - "*.css"
 
 cicd:
   - ".github/**"
