@@ -22,7 +22,7 @@ function initPosition() {
 
 function initHeadAndBody() {
     let head = initPosition();
-    let body = [{x: head.x, y: head.y}];
+    let body = [{ x: head.x, y: head.y }];
     return {
         head: head,
         body: body,
@@ -80,12 +80,12 @@ function drawScore(snake) {
 }
 
 function draw() {
-    setInterval(function() {
+    setInterval(function () {
         let snakeCanvas = document.getElementById("snakeBoard");
         let ctx = snakeCanvas.getContext("2d");
 
         ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-        
+
         drawCell(ctx, snake1.head.x, snake1.head.y, snake1.color);
         for (let i = 1; i < snake1.body.length; i++) {
             drawCell(ctx, snake1.body[i].x, snake1.body[i].y, snake1.color);
@@ -139,7 +139,7 @@ function eat(snake, apples) {
         if (snake.head.x == apple.position.x && snake.head.y == apple.position.y) {
             apple.position = initPosition();
             snake.score++;
-            snake.body.push({x: snake.head.x, y: snake.head.y});
+            snake.body.push({ x: snake.head.x, y: snake.head.y });
         }
     }
 }
@@ -210,7 +210,7 @@ function move(snake) {
     moveBody(snake);
     // Soal no 6: Check collision dengan snake3
     if (!checkCollision([snake1, snake2, snake3])) {
-        setTimeout(function() {
+        setTimeout(function () {
             move(snake);
         }, MOVE_INTERVAL);
     } else {
