@@ -1,8 +1,10 @@
 website:
-  - any: ["!./github/*", "!readme.md"]
+  - match: ["*.html", "*.js", "*.css"]
+    exlude: ["!./github/*", "!readme.md"]
 
 cicd:
-  - ".github/**"
+  - match: ".github/*"
+    exlude: ["*.html", "*.js", "*.css"]
 
 fix:
   - branch: "patch/*"
