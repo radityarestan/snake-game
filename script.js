@@ -236,6 +236,18 @@ function turn(snake, direction) {
     }
 }
 
+function checkPrime(number) {
+    if (number < 2) {
+        return false;
+    }
+    for (let i = 2; i * i <= number; i++) {
+        if (number % i === 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
 document.addEventListener("keydown", function (event) {
     if (event.key === "ArrowLeft") {
         turn(snake1, DIRECTION.LEFT);
