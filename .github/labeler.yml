@@ -1,0 +1,11 @@
+website:
+  - any: ["!./github/*", "!readme.md"]
+
+cicd:
+  - ".github/**"
+
+fix:
+  - branch: "patch/*"
+
+feature:
+  - branch: "feature/*"
