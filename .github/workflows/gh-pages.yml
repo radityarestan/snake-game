@@ -9,35 +9,19 @@ on:
       - main
 
 jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-20.04
-
-    steps:
-      - name: Checkout Code
-      - uses: actions/checkout@v2
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: production-files
-          path: ./build
-
   deploy:
-    name: Deploy
-    needs: build
     runs-on: ubuntu-20.04
-    if: github.ref == 'refs/heads/main'
-
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v2
+      - uses: actions/checkout@v2
         with:
-          name: production-files
-          path: ./build
+          submodules: true
+          fetch-depth: 0
 
-      - name: Deploy to gh-pages
+      - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
+        if: ${{ github.ref == 'refs/heads/main' }}
         with:
-          github_token: ${{secrets.TOKEN_GITHUB}}
-          publish_dir: ./build
+          github_token: ${{ secrets.TOKEN_GITHUB }}
+          publish_dir: ./
