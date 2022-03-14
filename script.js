@@ -11,7 +11,12 @@ const DIRECTION = {
     DOWN: 3,
 }
 // Soal no 2: Pengaturan Speed (semakin kecil semakin cepat) ubah dari 150 ke 120
-const MOVE_INTERVAL = 120;
+const DEFAULT_MOVE_INTERVAL = 130;
+
+let game = {
+    speed: 10,
+    level: 1,
+};
 
 function initPosition() {
     return {
@@ -79,6 +84,16 @@ function drawScore(snake) {
     scoreCtx.fillText(snake.score, 10, scoreCanvas.scrollHeight / 2);
 }
 
+function drawSpeed() {
+    let speedCanvas = document.getElementById("speedBoard");
+    let speedCtx = speedCanvas.getContext("2d");
+
+    speedCanvas.style.background = "#FF26264D";
+    speedCtx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    speedCtx.font = "30px Arial";
+    speedCtx.fillText(game.speed, 20, speedCanvas.scrollHeight / 2);
+}
+
 function draw() {
     setInterval(function () {
         let snakeCanvas = document.getElementById("snakeBoard");
@@ -114,6 +129,7 @@ function draw() {
         drawScore(snake2);
         // Soal no 6: Draw Player 3 Score:
         drawScore(snake3);
+        drawSpeed();
     }, REDRAW_INTERVAL);
 }
 
@@ -192,6 +208,13 @@ function checkCollision(snakes) {
     return isCollide;
 }
 
+function updateGame(score) {
+    if (score <= 20) {
+        game.level = Math.floor(score / 5) + 1;
+        game.speed = 20 * game.level;
+    }
+}
+
 function move(snake) {
     switch (snake.direction) {
         case DIRECTION.LEFT:
@@ -212,7 +235,9 @@ function move(snake) {
     if (!checkCollision([snake1, snake2, snake3])) {
         setTimeout(function () {
             move(snake);
-        }, MOVE_INTERVAL);
+            updateGame(snake.score);
+            console.log(game.level);
+        }, DEFAULT_MOVE_INTERVAL - game.speed);
     } else {
         initGame();
     }
@@ -271,8 +296,8 @@ document.addEventListener("keydown", function (event) {
 
 function initGame() {
     move(snake1);
-    move(snake2);
-    move(snake3);
+    // move(snake2);
+    // move(snake3);
 }
 
 initGame();
