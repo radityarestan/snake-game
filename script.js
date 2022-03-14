@@ -68,6 +68,8 @@ function initSnake(color) {
         color: color,
         ...initHeadAndBody(),
         direction: initDirection(),
+        score: 0,
+        health_point: 3,
         ... initGameProperty(),
     }
 }
@@ -126,6 +128,8 @@ function drawScore(snake) {
     scoreCtx.font = "30px Arial";
     scoreCtx.fillStyle = snake.color
     scoreCtx.fillText(snake.score, 10, scoreCanvas.scrollHeight / 2);
+    scoreCtx.font = "15px Arial";
+    scoreCtx.fillText("hp : " + snake.health_point, 10, scoreCanvas.scrollHeight / 2 + 20);
 }
 
 function drawSpeed(snake) {
@@ -238,6 +242,10 @@ function moveUp(snake) {
     eat(snake, apples);
 }
 
+
+function checkGameOver(snakes) {
+    let isGameOver = false;
+   
 function checkCollision(snakes) {
     let isCollide = false;
 
@@ -245,11 +253,17 @@ function checkCollision(snakes) {
         for (let j = 0; j < snakes.length; j++) {
             for (let k = 1; k < snakes[j].body.length; k++) {
                 if (snakes[i].head.x == snakes[j].body[k].x && snakes[i].head.y == snakes[j].body[k].y) {
-                    isCollide = true;
+                    snakes[i].health_point--;
+                    snakes[j].health_point--;
+                    
+                    if(snakes[i].health_point == 0 || snakes[j].health_point == 0){
+                        isGameOver = true;
+                    }
                 }
             }
         }
     }
+  if (isGameOver) {
     if (isCollide) {
         var audio = new Audio('game-over.mp3');
         audio.play();
@@ -257,8 +271,9 @@ function checkCollision(snakes) {
         alert("Game over");
         snake1 = initSnake("purple");
         snake2 = initSnake("blue");
+        snake3 = initSnake("black");
     }
-    return isCollide;
+    return isGameOver;
 }
 
 function checkCollisionWithObstacle(snake) {
@@ -303,6 +318,8 @@ function move(snake) {
             break;
     }
     moveBody(snake);
+
+  if (!checkGameOver([snake1, snake2, snake3])) {
 
     if (checkCollisionWithObstacle(snake)) {
         setTimeout(function(){
