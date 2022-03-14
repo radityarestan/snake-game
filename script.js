@@ -8,7 +8,6 @@ const DEFAULT_MOVE_INTERVAL = 140;
 
 const COLORS = {
     SNAKE: "#FB26FF",
-    COLLIDEDSNAKE: "#FBF5F4",
     OBSTACLE: "#1F1A1A",
     SPEEDBOARD: "#FF26264D",
 };
@@ -59,7 +58,8 @@ function initGameProperty() {
     return {
         score: 0,
         level: 1,
-        speed: 20.
+        speed: 20,
+        health_point: 3,
     }
 }
 
@@ -68,22 +68,16 @@ function initSnake(color) {
         color: color,
         ...initHeadAndBody(),
         direction: initDirection(),
-        score: 0,
-        health_point: 3,
         ... initGameProperty(),
     }
 }
 
 let snake1 = initSnake(COLORS.SNAKE);
-let snake2 = initSnake("blue");
-let snake3 = initSnake("black");
 
 let apples = [{
-    color: "red",
     position: initPosition(),
 },
 {
-    color: "green",
     position: initPosition(),
 }]
 
@@ -91,6 +85,7 @@ let heart = {
     position: initPosition(),
     flag: false,
 }
+
 let obstacles = [{
     size: initObstacleSize(),
     position: initPosition(),
@@ -118,14 +113,7 @@ function drawCell(ctx, x, y, color) {
 }
 
 function drawScore(snake) {
-    let scoreCanvas;
-    if (snake.color == snake1.color) {
-        scoreCanvas = document.getElementById("score1Board");
-    } else if (snake.color == snake2.color) {
-        scoreCanvas = document.getElementById("score2Board");
-    } else {
-        scoreCanvas = document.getElementById("score3Board");
-    }
+    let scoreCanvas = document.getElementById("score1Board");
     let scoreCtx = scoreCanvas.getContext("2d");
 
     scoreCtx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
@@ -158,16 +146,6 @@ function draw() {
             drawCell(ctx, snake1.body[i].x, snake1.body[i].y, snake1.color);
         }
 
-        drawCell(ctx, snake2.head.x, snake2.head.y, snake2.color);
-        for (let i = 1; i < snake2.body.length; i++) {
-            drawCell(ctx, snake2.body[i].x, snake2.body[i].y, snake2.color);
-        }
-
-        drawCell(ctx, snake3.head.x, snake3.head.y, snake3.color);
-        for (let i = 1; i < snake3.body.length; i++) {
-            drawCell(ctx, snake3.body[i].x, snake3.body[i].y, snake3.color);
-        }
-
         for (let i = 0; i < apples.length; i++) {
             let apple = apples[i];
 
@@ -177,7 +155,9 @@ function draw() {
 
         if (heart.flag) {    
             var heartImg = document.getElementById("heart");
-            ctx.drawImage(heartImg, heart.position.x * CELL_SIZE, heart.position.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);         
+            ctx.drawImage(heartImg, heart.position.x * CELL_SIZE, heart.position.y * CELL_SIZE, CELL_SIZE, CELL_SIZE); 
+        }
+
         for (let i = 0; i < snake1.level; i++) {
             let obstacle = obstacles[i];
             
@@ -193,8 +173,6 @@ function draw() {
         }
 
         drawScore(snake1);
-        drawScore(snake2);
-        drawScore(snake3);
         drawSpeed(snake1);
     }, REDRAW_INTERVAL);
 }
@@ -265,41 +243,31 @@ function moveUp(snake) {
     eat(snake, apples);
     eatHeart(snake);
 }
-
-
-function checkGameOver(snakes) {
-    let isGameOver = false;
    
-function checkCollision(snakes) {
-    let isCollide = false;
+function checkGameOver(snake) {
+    // let isGameOver = false;
+    // //this
+    // if (snake.health_point === 0) return true
+    // if (isGameOver) {
+    //     var audio = new Audio('game-over.mp3');
+    //     audio.play();
 
-    for (let i = 0; i < snakes.length; i++) {
-        for (let j = 0; j < snakes.length; j++) {
-            for (let k = 1; k < snakes[j].body.length; k++) {
-                if (snakes[i].head.x == snakes[j].body[k].x && snakes[i].head.y == snakes[j].body[k].y) {
-                    snakes[i].health_point--;
-                    snakes[j].health_point--;
-                    
-                    if(snakes[i].health_point == 0 || snakes[j].health_point == 0){
-                        isGameOver = true;
-                    }
-                }
-            }
+    //     alert("Game over");
+    //     snake1 = initSnake(COLORS.SNAKE);
+    //     heart.position = initPosition();
+    //     heart.flag = false;
+    // }
+    // return isGameOver;
+    return snake.health_point === 0;
+}
+
+function checkCollisionWithSelf(snake) {
+    for (let k = 1; k < snake.body.length; k++) {
+        if (snake.head.x == snake.body[k].x && snake.head.y == snake.body[k].y) {
+            return true;
         }
     }
-  if (isGameOver) {
-    if (isCollide) {
-        var audio = new Audio('game-over.mp3');
-        audio.play();
-
-        alert("Game over");
-        snake1 = initSnake("purple");
-        snake2 = initSnake("blue");
-        snake3 = initSnake("black");
-        heart.position = initPosition();
-        heart.flag = false;
-    }
-    return isGameOver;
+    return false;
 }
 
 function checkCollisionWithObstacle(snake) {
@@ -313,7 +281,6 @@ function checkCollisionWithObstacle(snake) {
         snake.head.y < obstacle.position.y + obstacle.size.y;
 
         if (isXCollideObstacle && isYCollideObstacle) {
-            snake.color = COLORS.COLLIDEDSNAKE;
             return true;
         }
     }
@@ -343,22 +310,33 @@ function move(snake) {
             moveUp(snake);
             break;
     }
+
     moveBody(snake);
 
-  if (!checkGameOver([snake1, snake2, snake3])) {
-
-    if (checkCollisionWithObstacle(snake)) {
-        setTimeout(function(){
-            snake.color = COLORS.SNAKE;
-        }, 300);
-    }
-
-    if (!checkCollision([snake1, snake2, snake3])) {
-        setTimeout(function () {
+    if (!checkGameOver(snake)) {
+        if (checkCollisionWithObstacle(snake) || checkCollisionWithSelf(snake)) {
+            snake.health_point--;
+            
+            let newSnakeHeadBody = initHeadAndBody();
+            snake.head = newSnakeHeadBody.head;
+            snake.body = newSnakeHeadBody.body;
             move(snake);
-            updateLevel(snake);
-        }, DEFAULT_MOVE_INTERVAL - snake.speed);
+        } else {
+            setTimeout(function () {
+                move(snake);
+                updateLevel(snake);
+            }, DEFAULT_MOVE_INTERVAL - snake.speed);
+        }
+
     } else {
+        var audio = new Audio('game-over.mp3');
+        audio.play();
+
+        alert("Game over");
+        snake1 = initSnake(COLORS.SNAKE);
+        heart.position = initPosition();
+        heart.flag = false;
+
         initGame();
     }
 }
@@ -394,7 +372,7 @@ function checkPrime(number) {
 }
 
 function checkPrimalitySnakeScore() {
-    if (checkPrime(snake1.score) || checkPrime(snake2.score) || checkPrime(snake3.score)) {
+    if (checkPrime(snake1.score)) {
         heart.flag = true;
     } else {
         heart.flag = false;
@@ -411,33 +389,10 @@ document.addEventListener("keydown", function (event) {
     } else if (event.key === "ArrowDown") {
         turn(snake1, DIRECTION.DOWN);
     }
-
-    if (event.key === "a") {
-        turn(snake2, DIRECTION.LEFT);
-    } else if (event.key === "d") {
-        turn(snake2, DIRECTION.RIGHT);
-    } else if (event.key === "w") {
-        turn(snake2, DIRECTION.UP);
-    } else if (event.key === "s") {
-        turn(snake2, DIRECTION.DOWN);
-    }
-
-    // Soal no 6: Add navigation snake3:
-    if (event.key === "j") {
-        turn(snake3, DIRECTION.LEFT);
-    } else if (event.key === "l") {
-        turn(snake3, DIRECTION.RIGHT);
-    } else if (event.key === "i") {
-        turn(snake3, DIRECTION.UP);
-    } else if (event.key === "k") {
-        turn(snake3, DIRECTION.DOWN);
-    }
 })
 
 function initGame() {
     move(snake1);
-    // move(snake2);
-    // move(snake3);
 }
 
 initGame();
