@@ -87,6 +87,10 @@ let apples = [{
     position: initPosition(),
 }]
 
+let heart = {
+    position: initPosition(),
+    flag: false,
+}
 let obstacles = [{
     size: initObstacleSize(),
     position: initPosition(),
@@ -171,6 +175,9 @@ function draw() {
             ctx.drawImage(img, apple.position.x * CELL_SIZE, apple.position.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
         }
 
+        if (heart.flag) {    
+            var heartImg = document.getElementById("heart");
+            ctx.drawImage(heartImg, heart.position.x * CELL_SIZE, heart.position.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);         
         for (let i = 0; i < snake1.level; i++) {
             let obstacle = obstacles[i];
             
@@ -214,6 +221,19 @@ function eat(snake, apples) {
             apple.position = initPosition();
             snake.score++;
             snake.body.push({ x: snake.head.x, y: snake.head.y });
+            checkPrimalitySnakeScore();
+        }
+    }
+}
+
+function eatHeart(snake) {
+    if (heart.flag) {    
+        if (snake.head.x == heart.position.x && snake.head.y == heart.position.y) {
+            heart.position = initPosition();
+            snake.health_point++;
+            snake.score++;
+            snake.body.push({ x: snake.head.x, y: snake.head.y });
+            checkPrimalitySnakeScore();
         }
     }
 }
@@ -222,24 +242,28 @@ function moveLeft(snake) {
     snake.head.x--;
     teleport(snake);
     eat(snake, apples);
+    eatHeart(snake);
 }
 
 function moveRight(snake) {
     snake.head.x++;
     teleport(snake);
     eat(snake, apples);
+    eatHeart(snake);
 }
 
 function moveDown(snake) {
     snake.head.y++;
     teleport(snake);
     eat(snake, apples);
+    eatHeart(snake);
 }
 
 function moveUp(snake) {
     snake.head.y--;
     teleport(snake);
     eat(snake, apples);
+    eatHeart(snake);
 }
 
 
@@ -272,6 +296,8 @@ function checkCollision(snakes) {
         snake1 = initSnake("purple");
         snake2 = initSnake("blue");
         snake3 = initSnake("black");
+        heart.position = initPosition();
+        heart.flag = false;
     }
     return isGameOver;
 }
@@ -352,6 +378,26 @@ function turn(snake, direction) {
 
     if (direction !== oppositeDirections[snake.direction]) {
         snake.direction = direction;
+    }
+}
+
+function checkPrime(number) {
+    if (number < 2) {
+        return false;
+    }
+    for (let i = 2; i * i <= number; i++) {
+        if (number % i === 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function checkPrimalitySnakeScore() {
+    if (checkPrime(snake1.score) || checkPrime(snake2.score) || checkPrime(snake3.score)) {
+        heart.flag = true;
+    } else {
+        heart.flag = false;
     }
 }
 
