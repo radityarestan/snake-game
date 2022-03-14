@@ -39,6 +39,7 @@ function initSnake(color) {
         ...initHeadAndBody(),
         direction: initDirection(),
         score: 0,
+        health_point: 3,
     }
 }
 let snake1 = initSnake("purple");
@@ -168,19 +169,24 @@ function moveUp(snake) {
     eat(snake, apples);
 }
 
-function checkCollision(snakes) {
-    let isCollide = false;
+function checkGameOver(snakes) {
+    let isGameOver = false;
     //this
     for (let i = 0; i < snakes.length; i++) {
         for (let j = 0; j < snakes.length; j++) {
             for (let k = 1; k < snakes[j].body.length; k++) {
                 if (snakes[i].head.x == snakes[j].body[k].x && snakes[i].head.y == snakes[j].body[k].y) {
-                    isCollide = true;
+                    snakes[i].health_point--;
+                    snakes[j].health_point--;
+                    
+                    if(snakes[i].health_point == 0 || snakes[j].health_point == 0){
+                        isGameOver = true;
+                    }
                 }
             }
         }
     }
-    if (isCollide) {
+    if (isGameOver) {
         // Soal no 5: Add game over audio:
         var audio = new Audio('game-over.mp3');
         audio.play();
@@ -188,8 +194,9 @@ function checkCollision(snakes) {
         alert("Game over");
         snake1 = initSnake("purple");
         snake2 = initSnake("blue");
+        snake3 = initSnake("black");
     }
-    return isCollide;
+    return isGameOver;
 }
 
 function move(snake) {
@@ -208,8 +215,7 @@ function move(snake) {
             break;
     }
     moveBody(snake);
-    // Soal no 6: Check collision dengan snake3
-    if (!checkCollision([snake1, snake2, snake3])) {
+    if (!checkGameOver([snake1, snake2, snake3])) {
         setTimeout(function () {
             move(snake);
         }, MOVE_INTERVAL);
