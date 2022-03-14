@@ -59,6 +59,7 @@ let apples = [{
 
 let heart = {
     position: initPosition(),
+    flag: false,
 }
 
 function drawCell(ctx, x, y, color) {
@@ -115,7 +116,7 @@ function draw() {
             ctx.drawImage(img, apple.position.x * CELL_SIZE, apple.position.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
         }
 
-        if (checkPrimalitySnakeScore()) {    
+        if (heart.flag) {    
             var heartImg = document.getElementById("heart");
             ctx.drawImage(heartImg, heart.position.x * CELL_SIZE, heart.position.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);         
         }
@@ -150,6 +151,7 @@ function eat(snake, apples) {
             apple.position = initPosition();
             snake.score++;
             snake.body.push({ x: snake.head.x, y: snake.head.y });
+            checkPrimalitySnakeScore();
         }
     }
 }
@@ -260,9 +262,10 @@ function checkPrime(number) {
 
 function checkPrimalitySnakeScore() {
     if (checkPrime(snake1.score) || checkPrime(snake2.score) || checkPrime(snake3.score)) {
-        return true;
+        heart.flag = true;
+    } else {
+        heart.flag = false;
     }
-    return false;
 }
 
 document.addEventListener("keydown", function (event) {
