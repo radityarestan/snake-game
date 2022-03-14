@@ -19,11 +19,52 @@ const DIRECTION = {
     DOWN: 3,
 }
 
+let obstacles = [{
+    size: initObstacleSize(),
+    position: initPosition(),
+},
+{
+    size: initObstacleSize(),
+    position: initPosition(),
+},
+{
+    size: initObstacleSize(),
+    position: initPosition(),
+},
+{
+    size: initObstacleSize(),
+    position: initPosition(),
+},
+{
+    size: initObstacleSize(),
+    position: initPosition(),
+}];
+
 function initPosition() {
     return {
         x: Math.floor(Math.random() * WIDTH),
         y: Math.floor(Math.random() * HEIGHT),
     }
+}
+
+function initPositionDependOnObstacle() {
+    let position = initPosition();
+    for (let i = 0; i < obstacles.length; i++) {
+        let obstacle = obstacles[i];
+
+        let isXCollided = position.x >= obstacle.position.x &&
+        position.x < obstacle.position.x + obstacle.size.x;
+        let isYCollided = position.y >= obstacle.position.y &&
+        position.y < obstacle.position.y + obstacle.size.y;
+        
+        if (isXCollided && isYCollided) {
+            position = initPosition();
+            i--;
+        }
+    }
+    console.log(position);
+
+    return position;
 }
 
 function initObstacleSize() {
@@ -42,7 +83,7 @@ function initObstacleSize() {
 }
 
 function initHeadAndBody() {
-    let head = initPosition();
+    let head = initPositionDependOnObstacle();
     let body = [{ x: head.x, y: head.y }];
     return {
         head: head,
@@ -74,38 +115,17 @@ function initSnake(color) {
 
 let snake1 = initSnake(COLORS.SNAKE);
 
-let apples = [{
-    position: initPosition(),
-},
-{
-    position: initPosition(),
-}]
-
 let heart = {
-    position: initPosition(),
+    position: initPositionDependOnObstacle(),
     flag: false,
 }
 
-let obstacles = [{
-    size: initObstacleSize(),
-    position: initPosition(),
+let apples = [{
+    position: initPositionDependOnObstacle(),
 },
 {
-    size: initObstacleSize(),
-    position: initPosition(),
-},
-{
-    size: initObstacleSize(),
-    position: initPosition(),
-},
-{
-    size: initObstacleSize(),
-    position: initPosition(),
-},
-{
-    size: initObstacleSize(),
-    position: initPosition(),
-}];
+    position: initPositionDependOnObstacle(),
+}]
 
 function drawCell(ctx, x, y, color) {
     ctx.fillStyle = color;
@@ -198,7 +218,7 @@ function eat(snake, apples) {
     for (let i = 0; i < apples.length; i++) {
         let apple = apples[i];
         if (snake.head.x == apple.position.x && snake.head.y == apple.position.y) {
-            apple.position = initPosition();
+            apple.position = initPositionDependOnObstacle();
             snake.score++;
             snake.body.push({ x: snake.head.x, y: snake.head.y });
             checkPrimalitySnakeScore();
@@ -209,7 +229,7 @@ function eat(snake, apples) {
 function eatHeart(snake) {
     if (heart.flag) {    
         if (snake.head.x == heart.position.x && snake.head.y == heart.position.y) {
-            heart.position = initPosition();
+            heart.position = initPositionDependOnObstacle();
             snake.health_point++;
             snake.score++;
             snake.body.push({ x: snake.head.x, y: snake.head.y });
@@ -330,7 +350,7 @@ function move(snake) {
 
         alert("Game over");
         snake1 = initSnake(COLORS.SNAKE);
-        heart.position = initPosition();
+        heart.position = initPositionDependOnObstacle();
         heart.flag = false;
 
         initGame();
