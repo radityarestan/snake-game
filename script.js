@@ -78,6 +78,8 @@ function drawScore(snake) {
     scoreCtx.font = "30px Arial";
     scoreCtx.fillStyle = snake.color
     scoreCtx.fillText(snake.score, 10, scoreCanvas.scrollHeight / 2);
+    scoreCtx.font = "15px Arial";
+    scoreCtx.fillText("hp : " + snake.health_point, 10, scoreCanvas.scrollHeight / 2 + 20);
 }
 
 function draw() {
