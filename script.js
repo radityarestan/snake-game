@@ -156,28 +156,44 @@ function eat(snake, apples) {
     }
 }
 
+function eatHeart(snake) {
+    if (heart.flag) {    
+        if (snake.head.x == heart.position.x && snake.head.y == heart.position.y) {
+            heart.position = initPosition();
+            snake.health_point++;
+            snake.score++;
+            snake.body.push({ x: snake.head.x, y: snake.head.y });
+            checkPrimalitySnakeScore();
+        }
+    }
+}
+
 function moveLeft(snake) {
     snake.head.x--;
     teleport(snake);
     eat(snake, apples);
+    eatHeart(snake);
 }
 
 function moveRight(snake) {
     snake.head.x++;
     teleport(snake);
     eat(snake, apples);
+    eatHeart(snake);
 }
 
 function moveDown(snake) {
     snake.head.y++;
     teleport(snake);
     eat(snake, apples);
+    eatHeart(snake);
 }
 
 function moveUp(snake) {
     snake.head.y--;
     teleport(snake);
     eat(snake, apples);
+    eatHeart(snake);
 }
 
 function checkCollision(snakes) {
