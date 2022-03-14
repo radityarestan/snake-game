@@ -216,6 +216,9 @@ function checkCollision(snakes) {
         alert("Game over");
         snake1 = initSnake("purple");
         snake2 = initSnake("blue");
+        snake3 = initSnake("black");
+        heart.position = initPosition();
+        heart.flag = false;
     }
     return isCollide;
 }
