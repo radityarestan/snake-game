@@ -11,12 +11,7 @@ const DIRECTION = {
     DOWN: 3,
 }
 // Soal no 2: Pengaturan Speed (semakin kecil semakin cepat) ubah dari 150 ke 120
-const DEFAULT_MOVE_INTERVAL = 130;
-
-let game = {
-    speed: 10,
-    level: 1,
-};
+const DEFAULT_MOVE_INTERVAL = 140;
 
 function initPosition() {
     return {
@@ -44,6 +39,8 @@ function initSnake(color) {
         ...initHeadAndBody(),
         direction: initDirection(),
         score: 0,
+        level: 1,
+        speed: 20,
     }
 }
 let snake1 = initSnake("purple");
@@ -91,7 +88,7 @@ function drawSpeed() {
     speedCanvas.style.background = "#FF26264D";
     speedCtx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
     speedCtx.font = "30px Arial";
-    speedCtx.fillText(game.speed, 20, speedCanvas.scrollHeight / 2);
+    speedCtx.fillText(snake1.speed, 20, speedCanvas.scrollHeight / 2);
 }
 
 function draw() {
@@ -208,10 +205,10 @@ function checkCollision(snakes) {
     return isCollide;
 }
 
-function updateGame(score) {
-    if (score <= 20) {
-        game.level = Math.floor(score / 5) + 1;
-        game.speed = 20 * game.level;
+function updateLevel(snake) {
+    if (snake.score <= 20) {
+        snake.level = Math.floor(snake.score / 5) + 1;
+        snake.speed = 20 * snake.level;
     }
 }
 
@@ -235,9 +232,8 @@ function move(snake) {
     if (!checkCollision([snake1, snake2, snake3])) {
         setTimeout(function () {
             move(snake);
-            updateGame(snake.score);
-            console.log(game.level);
-        }, DEFAULT_MOVE_INTERVAL - game.speed);
+            updateLevel(snake);
+        }, DEFAULT_MOVE_INTERVAL - snake.speed);
     } else {
         initGame();
     }
