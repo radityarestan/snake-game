@@ -39,6 +39,7 @@ function initSnake(color) {
         ...initHeadAndBody(),
         direction: initDirection(),
         score: 0,
+        health_point: 3,
     }
 }
 let snake1 = initSnake("purple");
