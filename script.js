@@ -132,6 +132,8 @@ function drawSpeed(snake) {
     speedCtx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
     speedCtx.font = "30px Arial";
     speedCtx.fillText(snake.speed, 10, speedCanvas.scrollHeight / 2);
+    speedCtx.font = "15px Arial";
+    speedCtx.fillText("km/h", 10, speedCanvas.scrollHeight / 2 + 20);
 }
 
 function draw() {
@@ -245,19 +247,6 @@ function moveUp(snake) {
 }
    
 function checkGameOver(snake) {
-    // let isGameOver = false;
-    // //this
-    // if (snake.health_point === 0) return true
-    // if (isGameOver) {
-    //     var audio = new Audio('game-over.mp3');
-    //     audio.play();
-
-    //     alert("Game over");
-    //     snake1 = initSnake(COLORS.SNAKE);
-    //     heart.position = initPosition();
-    //     heart.flag = false;
-    // }
-    // return isGameOver;
     return snake.health_point === 0;
 }
 
