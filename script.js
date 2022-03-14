@@ -20,6 +20,21 @@ function initPosition() {
     }
 }
 
+function initObstacleSize() {
+    let isVerticalObstacle = Math.floor(Math.random() * 2);
+
+    if (isVerticalObstacle) {
+        return {
+            x: 1,
+            y: Math.floor(Math.random() * CANVAS_SIZE / CELL_SIZE / 2) + 1,
+        }
+    } 
+    return {
+        x: Math.floor(Math.random() * CANVAS_SIZE / CELL_SIZE / 2) + 1,
+        y: 1, 
+    }
+}
+
 function initHeadAndBody() {
     let head = initPosition();
     let body = [{ x: head.x, y: head.y }];
@@ -57,6 +72,28 @@ let apples = [{
     color: "green",
     position: initPosition(),
 }]
+
+
+let obstacles = [{
+    size: initObstacleSize(),
+    position: initPosition(),
+},
+{
+    size: initObstacleSize(),
+    position: initPosition(),
+},
+{
+    size: initObstacleSize(),
+    position: initPosition(),
+},
+{
+    size: initObstacleSize(),
+    position: initPosition(),
+},
+{
+    size: initObstacleSize(),
+    position: initPosition(),
+}];
 
 function drawCell(ctx, x, y, color) {
     ctx.fillStyle = color;
@@ -120,6 +157,20 @@ function draw() {
             // Soal no 3: DrawImage apple dan gunakan image id:
             var img = document.getElementById("apple");
             ctx.drawImage(img, apple.position.x * CELL_SIZE, apple.position.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+        }
+
+        for (let i = 0; i < snake1.level; i++) {
+            let obstacle = obstacles[i];
+            
+            if (obstacle.size.x === 1) {
+                for (let y = 0; y < obstacle.size.y; y++) {
+                    drawCell(ctx, obstacle.position.x, obstacle.position.y + y, "#1F1A1A");
+                }
+            } else {
+                for (let x = 0; x < obstacle.size.x; x++) {
+                    drawCell(ctx, obstacle.position.x + x, obstacle.position.y, "#1F1A1A");
+                }
+            }
         }
 
         drawScore(snake1);
@@ -205,6 +256,28 @@ function checkCollision(snakes) {
     return isCollide;
 }
 
+function checkCollisionWithObstacle(snake) {
+    let isCollide = false;
+
+    for (let i = 0; i < snake1.level; i++) {
+        let obstacle = obstacles[i];
+
+        let isXCollideObstacle = snake.head.x >= obstacle.position.x && 
+        snake.head.x <= obstacle.position.x + obstacle.size.x;
+
+        let isYCollideObstacle = snake.head.y >= obstacle.position.y &&
+        snake.head.y <= obstacle.position.y + obstacle.size.y;
+
+        if (isXCollideObstacle && isYCollideObstacle) isCollide = true;
+
+        if (isCollide) {
+            snake1.color = "#FBF5F4";
+        }
+
+    }
+    return isCollide;
+}
+
 function updateLevel(snake) {
     if (snake.score <= 20) {
         snake.level = Math.floor(snake.score / 5) + 1;
@@ -229,6 +302,11 @@ function move(snake) {
     }
     moveBody(snake);
     // Soal no 6: Check collision dengan snake3
+    if (checkCollisionWithObstacle(snake1)) {
+        setTimeout(function(){
+            snake1.color = "purple";
+        }, 300);
+    }
     if (!checkCollision([snake1, snake2, snake3])) {
         setTimeout(function () {
             move(snake);
