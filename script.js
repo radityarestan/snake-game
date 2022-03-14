@@ -279,8 +279,15 @@ function checkCollisionWithObstacle(snake) {
 
 function updateLevel(snake) {
     if (snake.score <= 20) {
+        let oldlevel = snake.level;
         snake.level = Math.floor(snake.score / 5) + 1;
         snake.speed = 20 * snake.level;
+
+        if (snake.level > oldlevel) {
+            toast("Selamat kamu naik ke level " + snake.level);
+            var audio = new Audio('assets/levelUp.mp3');
+            audio.play();
+        }
     }
 }
 
